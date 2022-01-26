@@ -1,5 +1,7 @@
-import { useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import {firebaseConfig, getFirebaseDatabase} from "./services/firebase";
+import { ref, onValue} from "firebase/database";
 
 function App() {
   const [messages, setMessages] = useState([]);
@@ -16,6 +18,18 @@ function App() {
 
   const [mess, setMess] = useState("");
   const [name, setName] = useState("");
+  const firebaseDB = useMemo(()=>{
+      return getFirebaseDatabase(firebaseConfig);
+  },[]);
+
+  useEffect(()=>{
+      const starCountRef = ref(firebaseDB);
+      onValue(starCountRef, (snapshot) => {
+          const data = snapshot.val();
+          console.log(data)
+      });
+  },[firebaseDB])
+
   return (
     <div>
       {messages?.map((item) => {
